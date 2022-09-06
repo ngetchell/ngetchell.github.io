@@ -4,21 +4,21 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-            <title>Get-Command -Syntax vs Get-Help - ngetchell.com </title>
-        <meta name="description" content="Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always&hellip;" />
+            <title>Import a Module from Other Computers - ngetchell.com </title>
+        <meta name="description" content="PowerShell comes with a simple way to install a module using PowerShellGet and the Find/Install Module cmdlets. Did you know&hellip;" />
          
         <meta name="generator" content="Publii Open-Source CMS for Static Site" />
 
-        <link rel="canonical" href="https://ngetchell.github.io/get-command-syntax-vs-get-help/">
+        <link rel="canonical" href="https://ngetchell.github.io/import-a-module-from-other-computers/">
         
         <link rel="alternate" type="application/atom+xml" href="https://ngetchell.github.io/feed.xml" />
 <link rel="alternate" type="application/json" href="https://ngetchell.github.io/feed.json" />
 
-        <meta property="og:title" content="Get-Command -Syntax vs Get-Help" /><meta property="og:site_name" content="ngetchell.com" /><meta property="og:description" content="Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always&hellip;" /><meta property="og:url" content="https://ngetchell.github.io/get-command-syntax-vs-get-help/" /><meta property="og:type" content="article" />
+        <meta property="og:title" content="Import a Module from Other Computers" /><meta property="og:site_name" content="ngetchell.com" /><meta property="og:description" content="PowerShell comes with a simple way to install a module using PowerShellGet and the Find/Install Module cmdlets. Did you know&hellip;" /><meta property="og:url" content="https://ngetchell.github.io/import-a-module-from-other-computers/" /><meta property="og:type" content="article" />
         <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/fontawesome-all.min.css?v=bbcde81f26378440dac4c3d195714389">
         <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/style.css?v=18b3c33a28d59d5724c862d6181d24ab">
         <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/prism.css?v=47a114aeb6a2047f1d11e1f7ef2c1998">
-        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ngetchell.github.io/get-command-syntax-vs-get-help/"},"headline":"Get-Command -Syntax vs Get-Help","datePublished":"2022-07-16T18:43","dateModified":"2022-09-06T11:16","description":"Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always&hellip;","author":{"@type":"Person","name":"Nicholas M. Getchell","url":"https://ngetchell.github.io/authors/nicholas-m-getchell/"},"publisher":{"@type":"Organization","name":"Nicholas M. Getchell"}}</script>
+        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ngetchell.github.io/import-a-module-from-other-computers/"},"headline":"Import a Module from Other Computers","datePublished":"2022-09-06T11:33","dateModified":"2022-09-06T11:34","description":"PowerShell comes with a simple way to install a module using PowerShellGet and the Find/Install Module cmdlets. Did you know&hellip;","author":{"@type":"Person","name":"Nicholas M. Getchell","url":"https://ngetchell.github.io/authors/nicholas-m-getchell/"},"publisher":{"@type":"Organization","name":"Nicholas M. Getchell"}}</script>
         
         <link rel="stylesheet" href="{{css "prism.css" }}">
     </head>
@@ -36,27 +36,41 @@
 
       <article class="post">
             <header class="main post__header">              
-                  <time datetime="2022-07-16T18:43" class="post__date">
-                        July 16, 2022
+                  <time datetime="2022-09-06T11:33" class="post__date">
+                        September 6, 2022
                   </time>
 
                <h1>
-                  Get-Command -Syntax vs Get-Help
+                  Import a Module from Other Computers
                </h1>             
             </header>
 
 
          <div class="post__inner post__entry">           
-            <p>Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always the better way to look up the syntax of a <a href="__GHOST_URL__/intro-to-cmdlets/">cmdlet</a>. What did he mean by that? Get-Help and Get-Command are two of the only three cmdlets you need to know. The other being Get-Member. Why do you need both Get-Command AND Get-Help?</p>
-<p>A quick glance at the output of both commands reveals that the syntax parameter for Get-Command is similar to the help provided by Get-Help. Their function is very similar but derive their information from slightly different sources. When they show conflicting information, which one is correct?</p>
-<h2 id="get-help-limitations">Get-Help Limitations</h2>
-<p>To understand the limitations of Get-Help, you need to know where Get-Help gets it’s content from. Get-Help shows the MAML or Comment-Based help written by the module author. It may also show generic help populated by PowerShell at run time. PowerShell will attempt to give you *something *when you ask for help on a cmdlet that doesn’t provide any.</p>
-<p>The help built into PowerShell also needs to be updated before you can rely on it. The installed help has to correspond to the version you’re running.</p>
-<h2 id="get-command-syntax">Get-Command Syntax</h2>
-<p>Get-Command with the Syntax parameter ignores whatever the module author wrote for help and looks directly at the code on your machine to build out what parameters the cmdlet supports.</p>
-<p>The distinction is important when the help, or documentation of code is out of date. Another example would be if you used Update-Help and pulled down help for a <em>newer</em> version of the help than what you are running locally. Maybe a parameter was renamed, removed, or added in the help to reflect new functionality that you simply don’t have yet.</p>
-<h2 id="source-of-truth">Source of Truth</h2>
-<p>The truth is, Get-Command -Syntax should be considered the source of truth when you are sitting at the console. It works out of the box, there isn’t a need to download anything for it to function, and it doesn’t rely on the module author to provide accurate documentation.</p>
+            <p>PowerShell comes with a simple way to install a module using PowerShellGet and the Find/Install Module cmdlets. 
+Did you know however that you can import modules, over the network, from a computer that already has them installed? 
+They aren’t installed locally and when you run the commands, PowerShell will seamlessly run them in the PowerShell process running on the remote computer.</p>
+<p>I am constantly hopping onto different computers at work and not all of the computers have the RSAT tools for Active Directory administration. 
+Using the Import-Module with the PSSession parameter lets me use the local console for administration.</p>
+<pre><code class="language-powershell">$Session = New-PSSession -Computername DC
+Import-Module -PSSession $Session -Name ActiveDirectory
+
+Get-ADUser -identity ngetchell
+</code></pre>
+<p>The results come back to your own console even though the module resides on the remote box. 
+If you’ve ever administered an Exchange Online tenant from PowerShell you’ve likely used this feature. 
+Here, we import the entire session, not just one module into your current, local session.</p>
+<pre><code class="language-powershell">$Params = @{ 
+    ConfigurationName = &#39;Microsoft.Exchange&#39; 
+    Authentication    = &#39;Basic&#39;
+    AllowRedirection  = $true 
+    AllowClobber      = $true 
+    ConnectionUri     = &#39;https://outlook.office365.com/powershell-liveid/&#39; 
+    Credential        = ( Get-Credential ) 
+} 
+$Session = New-PSSession @Params 
+Import-PSSession $Session
+</code></pre>
             
          </div>
 
@@ -71,19 +85,19 @@
                      <h3>Share post:</h3>
                      
                         <a
-                           href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fngetchell.github.io%2Fget-command-syntax-vs-get-help%2F"
+                           href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fngetchell.github.io%2Fimport-a-module-from-other-computers%2F"
                            class="js-share icon brands fa-facebook"
                            rel="nofollow noopener noreferrer">
                            <span class="label">Facebook</span>
                         </a>
                         <a
-                           href="https://twitter.com/share?url=https%3A%2F%2Fngetchell.github.io%2Fget-command-syntax-vs-get-help%2F&amp;via=getch3028&amp;text=Get-Command%20-Syntax%20vs%20Get-Help"
+                           href="https://twitter.com/share?url=https%3A%2F%2Fngetchell.github.io%2Fimport-a-module-from-other-computers%2F&amp;via=getch3028&amp;text=Import%20a%20Module%20from%20Other%20Computers"
                            class="js-share icon brands fa-twitter"
                            rel="nofollow noopener noreferrer">
                            <span class="label">Twitter</span>
                         </a>
                         <a
-                           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fngetchell.github.io%2Fget-command-syntax-vs-get-help%2F"
+                           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fngetchell.github.io%2Fimport-a-module-from-other-computers%2F"
                            class="js-share icon brands fa-linkedin"
                            rel="nofollow noopener noreferrer">
                            <span class="label">LinkedIn</span>

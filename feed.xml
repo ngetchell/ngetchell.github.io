@@ -3,12 +3,57 @@
     <title>ngetchell.com</title>
     <link href="https://ngetchell.github.io/feed.xml" rel="self" />
     <link href="https://ngetchell.github.io" />
-    <updated>2022-09-06T11:24:20-04:00</updated>
+    <updated>2022-09-06T11:34:02-04:00</updated>
     <author>
         <name>Nicholas M. Getchell</name>
     </author>
     <id>https://ngetchell.github.io</id>
 
+    <entry>
+        <title>Import a Module from Other Computers</title>
+        <author>
+            <name>Nicholas M. Getchell</name>
+        </author>
+        <link href="https://ngetchell.github.io/import-a-module-from-other-computers/"/>
+        <id>https://ngetchell.github.io/import-a-module-from-other-computers/</id>
+            <category term="PowerShell"/>
+
+        <updated>2022-09-06T11:34:02-04:00</updated>
+            <summary>
+                <![CDATA[
+                    PowerShell comes with a simple way to install a module using PowerShellGet and the Find/Install Module cmdlets. Did you know&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>PowerShell comes with a simple way to install a module using PowerShellGet and the Find/Install Module cmdlets. 
+Did you know however that you can import modules, over the network, from a computer that already has them installed? 
+They aren’t installed locally and when you run the commands, PowerShell will seamlessly run them in the PowerShell process running on the remote computer.</p>
+<p>I am constantly hopping onto different computers at work and not all of the computers have the RSAT tools for Active Directory administration. 
+Using the Import-Module with the PSSession parameter lets me use the local console for administration.</p>
+<pre><code class="language-powershell">$Session = New-PSSession -Computername DC
+Import-Module -PSSession $Session -Name ActiveDirectory
+
+Get-ADUser -identity ngetchell
+</code></pre>
+<p>The results come back to your own console even though the module resides on the remote box. 
+If you’ve ever administered an Exchange Online tenant from PowerShell you’ve likely used this feature. 
+Here, we import the entire session, not just one module into your current, local session.</p>
+<pre><code class="language-powershell">$Params = @{ 
+    ConfigurationName = &#39;Microsoft.Exchange&#39; 
+    Authentication    = &#39;Basic&#39;
+    AllowRedirection  = $true 
+    AllowClobber      = $true 
+    ConnectionUri     = &#39;https://outlook.office365.com/powershell-liveid/&#39; 
+    Credential        = ( Get-Credential ) 
+} 
+$Session = New-PSSession @Params 
+Import-PSSession $Session
+</code></pre>
+
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>Get-Command -Syntax vs Get-Help</title>
         <author>
@@ -265,8 +310,9 @@ Get-Service -Name BITS |
         </author>
         <link href="https://ngetchell.github.io/random-man-page-in-powershell/"/>
         <id>https://ngetchell.github.io/random-man-page-in-powershell/</id>
+            <category term="PowerShell"/>
 
-        <updated>2022-09-06T11:20:04-04:00</updated>
+        <updated>2022-09-06T11:24:38-04:00</updated>
             <summary>
                 <![CDATA[
                         <img src="https://ngetchell.github.io/media/posts/15/Annotation.png" alt="" />
@@ -341,8 +387,9 @@ You could also save it to a file and attach it in an email but it is outside the
         </author>
         <link href="https://ngetchell.github.io/psgitlab-v301-released/"/>
         <id>https://ngetchell.github.io/psgitlab-v301-released/</id>
+            <category term="PowerShell"/>
 
-        <updated>2022-09-06T11:24:20-04:00</updated>
+        <updated>2022-09-06T11:24:46-04:00</updated>
             <summary>
                 <![CDATA[
                         <img src="https://ngetchell.github.io/media/posts/16/Screen-Shot-2018-10-03-at-2.07.56-PM.png" alt="" />

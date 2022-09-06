@@ -10,6 +10,21 @@
     },
     "items": [
         {
+            "id": "https://ngetchell.github.io/import-a-module-from-other-computers/",
+            "url": "https://ngetchell.github.io/import-a-module-from-other-computers/",
+            "title": "Import a Module from Other Computers",
+            "summary": "PowerShell comes with a simple way to install a module using PowerShellGet and the Find/Install Module cmdlets. Did you know&hellip;",
+            "content_html": "<p>PowerShell comes with a simple way to install a module using PowerShellGet and the Find/Install Module cmdlets. \nDid you know however that you can import modules, over the network, from a computer that already has them installed? \nThey aren’t installed locally and when you run the commands, PowerShell will seamlessly run them in the PowerShell process running on the remote computer.</p>\n<p>I am constantly hopping onto different computers at work and not all of the computers have the RSAT tools for Active Directory administration. \nUsing the Import-Module with the PSSession parameter lets me use the local console for administration.</p>\n<pre><code class=\"language-powershell\">$Session = New-PSSession -Computername DC\nImport-Module -PSSession $Session -Name ActiveDirectory\n\nGet-ADUser -identity ngetchell\n</code></pre>\n<p>The results come back to your own console even though the module resides on the remote box. \nIf you’ve ever administered an Exchange Online tenant from PowerShell you’ve likely used this feature. \nHere, we import the entire session, not just one module into your current, local session.</p>\n<pre><code class=\"language-powershell\">$Params = @{ \n    ConfigurationName = &#39;Microsoft.Exchange&#39; \n    Authentication    = &#39;Basic&#39;\n    AllowRedirection  = $true \n    AllowClobber      = $true \n    ConnectionUri     = &#39;https://outlook.office365.com/powershell-liveid/&#39; \n    Credential        = ( Get-Credential ) \n} \n$Session = New-PSSession @Params \nImport-PSSession $Session\n</code></pre>\n",
+            "author": {
+                "name": "Nicholas M. Getchell"
+            },
+            "tags": [
+                   "PowerShell"
+            ],
+            "date_published": "2022-09-06T11:33:56-04:00",
+            "date_modified": "2022-09-06T11:34:02-04:00"
+        },
+        {
             "id": "https://ngetchell.github.io/get-command-syntax-vs-get-help/",
             "url": "https://ngetchell.github.io/get-command-syntax-vs-get-help/",
             "title": "Get-Command -Syntax vs Get-Help",
@@ -66,9 +81,10 @@
                 "name": "Nicholas M. Getchell"
             },
             "tags": [
+                   "PowerShell"
             ],
             "date_published": "2018-11-14T15:59:00-05:00",
-            "date_modified": "2022-09-06T11:20:04-04:00"
+            "date_modified": "2022-09-06T11:24:38-04:00"
         },
         {
             "id": "https://ngetchell.github.io/psgitlab-v301-released/",
@@ -81,9 +97,10 @@
                 "name": "Nicholas M. Getchell"
             },
             "tags": [
+                   "PowerShell"
             ],
             "date_published": "2018-10-10T16:30:00-04:00",
-            "date_modified": "2022-09-06T11:24:20-04:00"
+            "date_modified": "2022-09-06T11:24:46-04:00"
         }
     ]
 }
