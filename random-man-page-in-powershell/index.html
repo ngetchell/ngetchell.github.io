@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+            <title>Random Man Page in PowerShell - ngetchell.com </title>
+        <meta name="description" content="PowerShell is a programming language and console application that comes with “batteries included”. The help system and documentation is built&hellip;" />
+         
+        <meta name="generator" content="Publii Open-Source CMS for Static Site" />
+
+        <link rel="canonical" href="https://ngetchell.github.io/random-man-page-in-powershell/">
+        
+        <link rel="alternate" type="application/atom+xml" href="https://ngetchell.github.io/feed.xml" />
+<link rel="alternate" type="application/json" href="https://ngetchell.github.io/feed.json" />
+
+        <meta property="og:title" content="Random Man Page in PowerShell" /><meta property="og:image" content="https://ngetchell.github.io/media/posts/15/Annotation.png"/><meta property="og:site_name" content="ngetchell.com" /><meta property="og:description" content="PowerShell is a programming language and console application that comes with “batteries included”. The help system and documentation is built&hellip;" /><meta property="og:url" content="https://ngetchell.github.io/random-man-page-in-powershell/" /><meta property="og:type" content="article" />
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/fontawesome-all.min.css?v=bbcde81f26378440dac4c3d195714389">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/style.css?v=18b3c33a28d59d5724c862d6181d24ab">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/prism.css?v=47a114aeb6a2047f1d11e1f7ef2c1998">
+        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ngetchell.github.io/random-man-page-in-powershell/"},"headline":"Random Man Page in PowerShell","datePublished":"2022-09-06T11:19","dateModified":"2022-09-06T11:19","image":{"@type":"ImageObject","url":"https://ngetchell.github.io/media/posts/15/Annotation.png","height":306,"width":477},"description":"PowerShell is a programming language and console application that comes with “batteries included”. The help system and documentation is built&hellip;","author":{"@type":"Person","name":"Nicholas M. Getchell","url":"https://ngetchell.github.io/authors/nicholas-m-getchell/"},"publisher":{"@type":"Organization","name":"Nicholas M. Getchell"}}</script>
+        
+        <link rel="stylesheet" href="{{css "prism.css" }}">
+    </head>
+    <body class="is-preload">
+        <div id="wrapper">
+   <div id="main">
+		<div class="inner">
+
+         <header id="header">
+            <a class="logo" href="https://ngetchell.github.io/">
+                  <strong>ngetchell.com</strong>
+            </a>
+         </header>
+
+
+      <article class="post">
+            <header class="main post__header">              
+                  <time datetime="2022-09-06T11:19" class="post__date">
+                        September 6, 2022
+                  </time>
+
+               <h1>
+                  Random Man Page in PowerShell
+               </h1>             
+            </header>
+
+                  <figure class="image main">
+                     <img
+                        src="https://ngetchell.github.io/media/posts/15/Annotation.png"
+                           srcset="https://ngetchell.github.io/media/posts/15/responsive/Annotation-xs.png 300w ,https://ngetchell.github.io/media/posts/15/responsive/Annotation-sm.png 480w ,https://ngetchell.github.io/media/posts/15/responsive/Annotation-md.png 768w ,https://ngetchell.github.io/media/posts/15/responsive/Annotation-lg.png 1024w ,https://ngetchell.github.io/media/posts/15/responsive/Annotation-xl.png 1360w ,https://ngetchell.github.io/media/posts/15/responsive/Annotation-xxl.png 1600w" sizes="(max-width: 1600px) 100vw, 1600px"
+                         loading="lazy"
+                        height="306"
+                        width="477"
+                        alt="">
+                  </figure>
+
+         <div class="post__inner post__entry">           
+            <p>PowerShell is a programming language and console application that comes with “batteries included”. 
+The help system and documentation is built in. 
+Granted, it arrives in an outdated form for built-in modules and requires an Update-Help to be complete. 
+A man page is crucial for understanding commands in Linux.</p>
+<p>One of the ways I learn new technology is to read the man page. 
+It isn’t the most efficient way to learn, I prefer a combination of books and video training, but I always learn something new, every time I read a man page. 
+I find that the cmdlets I know best generate a big surprise when I learn something new about them. 
+It helps me round out my knowledge and fill in the gaps.</p>
+<p>The PowerShell About help system is as close as PowerShell gets to the man pages found on a Linux box. 
+To select a random About topic to read about look at the following code.</p>
+<pre><code class="language-powershell"># Update Help so you have all help
+Update-Help
+
+# Get A Topic
+$Topic = Get-Help about_* | 
+    Select-Object -ExpandProperty Name -Unique | 
+    Get-Random -Count 1
+
+# Display the Help File
+Get-Help -Full -name $Topic
+</code></pre>
+<p>Turning it into a function is simple. Slap it in your profile if you want it at your disposal.</p>
+<pre><code class="language-powershell"># Validated on PS Core 6.1.0
+Function Get-RandomAboutHelp {
+    $ProgressPreference = &#39;SilentlyContinue&#39;
+    $Topic = Get-Help about_* | 
+    Select-Object -ExpandProperty Name -Unique | 
+    Get-Random -Count 1
+
+    Get-Help -Full -name $Topic | out-string
+
+}
+
+Get-RandomAboutHelp
+</code></pre>
+<h2 id="task-scheduler-email">Task Scheduler Email</h2>
+<p>If you’re interested in automating an email message with a random about topic page try using Task Scheduler and the code below to schedule the email on daily, weekly, or monthly intervals.</p>
+<pre><code class="language-powershell">$Body = Get-RandomAboutHelp
+
+$Splat = @{
+    To         = &#39;user@domain.com&#39;
+    from       = &#39;PSHelp@powershell.org&#39;
+    Subject    = &#39;Daily Help Message&#39;
+    Body       = $Body 
+    SmtpServer = &#39;smtp.domain.com&#39;
+}
+
+Send-MailMessage @Splat
+</code></pre>
+<h2 id="linux-man-pages">Linux Man Pages</h2>
+<p>In case you’re wondering now I do it in bash, I use the apripos, awk, and xargs commands then send it to the console. 
+You could also save it to a file and attach it in an email but it is outside the scope of this article.</p>
+<pre><code class="language-bash">apropos . | awk &#39;{print $1}&#39; | sort -R | head -1 | xargs man
+</code></pre>
+            
+         </div>
+
+            <footer class="post__inner post__footer">
+
+                     <p class="post__last-updated">
+                        This article was updated on
+                           September 6, 2022
+                     </p>
+                    
+                  <div class="post__share">
+                     <h3>Share post:</h3>
+                     
+                        <a
+                           href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fngetchell.github.io%2Frandom-man-page-in-powershell%2F"
+                           class="js-share icon brands fa-facebook"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Facebook</span>
+                        </a>
+                        <a
+                           href="https://twitter.com/share?url=https%3A%2F%2Fngetchell.github.io%2Frandom-man-page-in-powershell%2F&amp;via=getch3028&amp;text=Random%20Man%20Page%20in%20PowerShell"
+                           class="js-share icon brands fa-twitter"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Twitter</span>
+                        </a>
+                        <a
+                           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fngetchell.github.io%2Frandom-man-page-in-powershell%2F"
+                           class="js-share icon brands fa-linkedin"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">LinkedIn</span>
+                        </a>
+                  </div>
+
+
+                  <div class="post__bio">
+                        <div>
+                           <h3>
+                              <a href="https://ngetchell.github.io/authors/nicholas-m-getchell/" class="invert" rel="author">Nicholas M. Getchell</a>
+                           </h3>
+
+                        </div>
+                  </div>
+            </footer>
+      </article>
+
+
+
+
+  </div>
+</div>
+    <div id="sidebar">
+       <div class="inner">
+    
+    
+          <nav id="menu">
+             <header class="major">
+                <h2>Menu</h2>
+             </header>
+                <ul>
+                         <li>
+                         <a
+                            href="https://ngetchell.github.io/tags/powershell/"
+                               target="_self"
+                >
+                            PowerShell
+                         </a>
+                
+                   </li>
+                         <li class="has-submenu">
+                         <a
+                            href="https://ngetchell.github.io/tags/linux/"
+                               target="_self"
+                               aria-haspopup="true" 
+                               class="opener"
+                            >
+                            Linux
+                         </a>
+                
+                         <ul class="submenu level-2" aria-hidden="true">
+                                  <li>
+                                  <a
+                                     href="https://ngetchell.github.io/authors/nicholas-m-getchell/"
+                                        target="_self"
+                         >
+                                     Submenu Item
+                                  </a>
+                         
+                            </li>
+                         </ul>
+                               </li>
+                </ul>
+                         </nav>
+    
+    
+    
+          <footer id="footer">
+             <p class="copyright">© ngetchell.com - All rights reserved</p> 
+          </footer>
+    
+          </div>
+       </div>
+</div>
+
+
+<script  src="https://ngetchell.github.io/assets/js/jquery.min.js?v=7c14a783dfeb3d238ccd3edd840d82ee"></script>
+<script  src="https://ngetchell.github.io/assets/js/browser.min.js?v=c07298dd19048a8a69ad97e754dfe8d0"></script>
+<script  src="https://ngetchell.github.io/assets/js/breakpoints.min.js?v=81a479eb099e3b187613943b085923b8"></script>
+<script  src="https://ngetchell.github.io/assets/js/util.min.js?v=cbdaf7c20ac2883c77ae23acfbabd47e"></script>
+<script  src="https://ngetchell.github.io/assets/js/main.min.js?v=448f4c9d4b4c374766a1cb76c3d88048"></script>
+<script defer src="https://ngetchell.github.io/assets/js/prism.js?v=8121b5b69231dd2e5612cd01885d6eff"></script>
+
+   <script>var images=document.querySelectorAll("img[loading]");for(var i=0;i<images.length;i++){if(images[i].complete){images[i].classList.add("is-loaded")}else{images[i].addEventListener("load",function(){this.classList.add("is-loaded")},false)}};</script>
+
+<script defer src="{{js "prism.js"}}"></script>
+
+
+</body>
+</html>

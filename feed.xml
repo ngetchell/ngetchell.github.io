@@ -3,12 +3,88 @@
     <title>ngetchell.com</title>
     <link href="https://ngetchell.github.io/feed.xml" rel="self" />
     <link href="https://ngetchell.github.io" />
-    <updated>2022-07-16T18:44:15-04:00</updated>
+    <updated>2022-09-06T11:19:07-04:00</updated>
     <author>
         <name>Nicholas M. Getchell</name>
     </author>
     <id>https://ngetchell.github.io</id>
 
+    <entry>
+        <title>Random Man Page in PowerShell</title>
+        <author>
+            <name>Nicholas M. Getchell</name>
+        </author>
+        <link href="https://ngetchell.github.io/random-man-page-in-powershell/"/>
+        <id>https://ngetchell.github.io/random-man-page-in-powershell/</id>
+
+        <updated>2022-09-06T11:19:07-04:00</updated>
+            <summary>
+                <![CDATA[
+                        <img src="https://ngetchell.github.io/media/posts/15/Annotation.png" alt="" />
+                    PowerShell is a programming language and console application that comes with “batteries included”. The help system and documentation is built&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                    <img src="https://ngetchell.github.io/media/posts/15/Annotation.png" alt="" />
+                <p>PowerShell is a programming language and console application that comes with “batteries included”. 
+The help system and documentation is built in. 
+Granted, it arrives in an outdated form for built-in modules and requires an Update-Help to be complete. 
+A man page is crucial for understanding commands in Linux.</p>
+<p>One of the ways I learn new technology is to read the man page. 
+It isn’t the most efficient way to learn, I prefer a combination of books and video training, but I always learn something new, every time I read a man page. 
+I find that the cmdlets I know best generate a big surprise when I learn something new about them. 
+It helps me round out my knowledge and fill in the gaps.</p>
+<p>The PowerShell About help system is as close as PowerShell gets to the man pages found on a Linux box. 
+To select a random About topic to read about look at the following code.</p>
+<pre><code class="language-powershell"># Update Help so you have all help
+Update-Help
+
+# Get A Topic
+$Topic = Get-Help about_* | 
+    Select-Object -ExpandProperty Name -Unique | 
+    Get-Random -Count 1
+
+# Display the Help File
+Get-Help -Full -name $Topic
+</code></pre>
+<p>Turning it into a function is simple. Slap it in your profile if you want it at your disposal.</p>
+<pre><code class="language-powershell"># Validated on PS Core 6.1.0
+Function Get-RandomAboutHelp {
+    $ProgressPreference = &#39;SilentlyContinue&#39;
+    $Topic = Get-Help about_* | 
+    Select-Object -ExpandProperty Name -Unique | 
+    Get-Random -Count 1
+
+    Get-Help -Full -name $Topic | out-string
+
+}
+
+Get-RandomAboutHelp
+</code></pre>
+<h2 id="task-scheduler-email">Task Scheduler Email</h2>
+<p>If you’re interested in automating an email message with a random about topic page try using Task Scheduler and the code below to schedule the email on daily, weekly, or monthly intervals.</p>
+<pre><code class="language-powershell">$Body = Get-RandomAboutHelp
+
+$Splat = @{
+    To         = &#39;user@domain.com&#39;
+    from       = &#39;PSHelp@powershell.org&#39;
+    Subject    = &#39;Daily Help Message&#39;
+    Body       = $Body 
+    SmtpServer = &#39;smtp.domain.com&#39;
+}
+
+Send-MailMessage @Splat
+</code></pre>
+<h2 id="linux-man-pages">Linux Man Pages</h2>
+<p>In case you’re wondering now I do it in bash, I use the apripos, awk, and xargs commands then send it to the console. 
+You could also save it to a file and attach it in an email but it is outside the scope of this article.</p>
+<pre><code class="language-bash">apropos . | awk &#39;{print $1}&#39; | sort -R | head -1 | xargs man
+</code></pre>
+
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>Get-Command -Syntax vs Get-Help</title>
         <author>
@@ -16,8 +92,9 @@
         </author>
         <link href="https://ngetchell.github.io/get-command-syntax-vs-get-help/"/>
         <id>https://ngetchell.github.io/get-command-syntax-vs-get-help/</id>
+            <category term="PowerShell"/>
 
-        <updated>2022-07-16T18:44:15-04:00</updated>
+        <updated>2022-09-06T11:16:07-04:00</updated>
             <summary>
                 <![CDATA[
                     Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always&hellip;
@@ -127,15 +204,18 @@ Add-ADGroupMember @addADGroupMemberSplat
         </author>
         <link href="https://ngetchell.github.io/logging-powershell-scripts/"/>
         <id>https://ngetchell.github.io/logging-powershell-scripts/</id>
+            <category term="PowerShell"/>
 
-        <updated>2022-07-16T18:35:14-04:00</updated>
+        <updated>2022-09-06T11:16:25-04:00</updated>
             <summary>
                 <![CDATA[
+                        <img src="https://ngetchell.github.io/media/posts/5/Annotation-2019-01-17-213025.jpg" alt="" />
                     As you progress from running commands at the console, to scripting tedious work, to automating entire processes you still need&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
+                    <img src="https://ngetchell.github.io/media/posts/5/Annotation-2019-01-17-213025.jpg" alt="" />
                 
   <p>
     As you progress from running commands at the console, to scripting tedious work, to automating entire processes you still need to keep an eye on whats running. Nobody likes figuring out what went wrong on in a process by debugging your script. You should integrate logging into any scripts that run unattended. Logging saves time and helps surface errors in your scripts. Luckily, saving to a log file in PowerShell is simple.
