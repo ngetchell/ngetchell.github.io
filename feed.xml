@@ -3,88 +3,12 @@
     <title>ngetchell.com</title>
     <link href="https://ngetchell.github.io/feed.xml" rel="self" />
     <link href="https://ngetchell.github.io" />
-    <updated>2022-09-06T11:19:07-04:00</updated>
+    <updated>2022-09-06T11:24:20-04:00</updated>
     <author>
         <name>Nicholas M. Getchell</name>
     </author>
     <id>https://ngetchell.github.io</id>
 
-    <entry>
-        <title>Random Man Page in PowerShell</title>
-        <author>
-            <name>Nicholas M. Getchell</name>
-        </author>
-        <link href="https://ngetchell.github.io/random-man-page-in-powershell/"/>
-        <id>https://ngetchell.github.io/random-man-page-in-powershell/</id>
-
-        <updated>2022-09-06T11:19:07-04:00</updated>
-            <summary>
-                <![CDATA[
-                        <img src="https://ngetchell.github.io/media/posts/15/Annotation.png" alt="" />
-                    PowerShell is a programming language and console application that comes with “batteries included”. The help system and documentation is built&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                    <img src="https://ngetchell.github.io/media/posts/15/Annotation.png" alt="" />
-                <p>PowerShell is a programming language and console application that comes with “batteries included”. 
-The help system and documentation is built in. 
-Granted, it arrives in an outdated form for built-in modules and requires an Update-Help to be complete. 
-A man page is crucial for understanding commands in Linux.</p>
-<p>One of the ways I learn new technology is to read the man page. 
-It isn’t the most efficient way to learn, I prefer a combination of books and video training, but I always learn something new, every time I read a man page. 
-I find that the cmdlets I know best generate a big surprise when I learn something new about them. 
-It helps me round out my knowledge and fill in the gaps.</p>
-<p>The PowerShell About help system is as close as PowerShell gets to the man pages found on a Linux box. 
-To select a random About topic to read about look at the following code.</p>
-<pre><code class="language-powershell"># Update Help so you have all help
-Update-Help
-
-# Get A Topic
-$Topic = Get-Help about_* | 
-    Select-Object -ExpandProperty Name -Unique | 
-    Get-Random -Count 1
-
-# Display the Help File
-Get-Help -Full -name $Topic
-</code></pre>
-<p>Turning it into a function is simple. Slap it in your profile if you want it at your disposal.</p>
-<pre><code class="language-powershell"># Validated on PS Core 6.1.0
-Function Get-RandomAboutHelp {
-    $ProgressPreference = &#39;SilentlyContinue&#39;
-    $Topic = Get-Help about_* | 
-    Select-Object -ExpandProperty Name -Unique | 
-    Get-Random -Count 1
-
-    Get-Help -Full -name $Topic | out-string
-
-}
-
-Get-RandomAboutHelp
-</code></pre>
-<h2 id="task-scheduler-email">Task Scheduler Email</h2>
-<p>If you’re interested in automating an email message with a random about topic page try using Task Scheduler and the code below to schedule the email on daily, weekly, or monthly intervals.</p>
-<pre><code class="language-powershell">$Body = Get-RandomAboutHelp
-
-$Splat = @{
-    To         = &#39;user@domain.com&#39;
-    from       = &#39;PSHelp@powershell.org&#39;
-    Subject    = &#39;Daily Help Message&#39;
-    Body       = $Body 
-    SmtpServer = &#39;smtp.domain.com&#39;
-}
-
-Send-MailMessage @Splat
-</code></pre>
-<h2 id="linux-man-pages">Linux Man Pages</h2>
-<p>In case you’re wondering now I do it in bash, I use the apripos, awk, and xargs commands then send it to the console. 
-You could also save it to a file and attach it in an email but it is outside the scope of this article.</p>
-<pre><code class="language-bash">apropos . | awk &#39;{print $1}&#39; | sort -R | head -1 | xargs man
-</code></pre>
-
-            ]]>
-        </content>
-    </entry>
     <entry>
         <title>Get-Command -Syntax vs Get-Help</title>
         <author>
@@ -331,6 +255,132 @@ Get-Service -Name BITS |
   <p>
     
   </p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>Random Man Page in PowerShell</title>
+        <author>
+            <name>Nicholas M. Getchell</name>
+        </author>
+        <link href="https://ngetchell.github.io/random-man-page-in-powershell/"/>
+        <id>https://ngetchell.github.io/random-man-page-in-powershell/</id>
+
+        <updated>2022-09-06T11:20:04-04:00</updated>
+            <summary>
+                <![CDATA[
+                        <img src="https://ngetchell.github.io/media/posts/15/Annotation.png" alt="" />
+                    PowerShell is a programming language and console application that comes with “batteries included”. The help system and documentation is built&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                    <img src="https://ngetchell.github.io/media/posts/15/Annotation.png" alt="" />
+                <p>PowerShell is a programming language and console application that comes with “batteries included”. 
+The help system and documentation is built in. 
+Granted, it arrives in an outdated form for built-in modules and requires an Update-Help to be complete. 
+A man page is crucial for understanding commands in Linux.</p>
+<p>One of the ways I learn new technology is to read the man page. 
+It isn’t the most efficient way to learn, I prefer a combination of books and video training, but I always learn something new, every time I read a man page. 
+I find that the cmdlets I know best generate a big surprise when I learn something new about them. 
+It helps me round out my knowledge and fill in the gaps.</p>
+<p>The PowerShell About help system is as close as PowerShell gets to the man pages found on a Linux box. 
+To select a random About topic to read about look at the following code.</p>
+<pre><code class="language-powershell"># Update Help so you have all help
+Update-Help
+
+# Get A Topic
+$Topic = Get-Help about_* | 
+    Select-Object -ExpandProperty Name -Unique | 
+    Get-Random -Count 1
+
+# Display the Help File
+Get-Help -Full -name $Topic
+</code></pre>
+<p>Turning it into a function is simple. Slap it in your profile if you want it at your disposal.</p>
+<pre><code class="language-powershell"># Validated on PS Core 6.1.0
+Function Get-RandomAboutHelp {
+    $ProgressPreference = &#39;SilentlyContinue&#39;
+    $Topic = Get-Help about_* | 
+    Select-Object -ExpandProperty Name -Unique | 
+    Get-Random -Count 1
+
+    Get-Help -Full -name $Topic | out-string
+
+}
+
+Get-RandomAboutHelp
+</code></pre>
+<h2 id="task-scheduler-email">Task Scheduler Email</h2>
+<p>If you’re interested in automating an email message with a random about topic page try using Task Scheduler and the code below to schedule the email on daily, weekly, or monthly intervals.</p>
+<pre><code class="language-powershell">$Body = Get-RandomAboutHelp
+
+$Splat = @{
+    To         = &#39;user@domain.com&#39;
+    from       = &#39;PSHelp@powershell.org&#39;
+    Subject    = &#39;Daily Help Message&#39;
+    Body       = $Body 
+    SmtpServer = &#39;smtp.domain.com&#39;
+}
+
+Send-MailMessage @Splat
+</code></pre>
+<h2 id="linux-man-pages">Linux Man Pages</h2>
+<p>In case you’re wondering now I do it in bash, I use the apripos, awk, and xargs commands then send it to the console. 
+You could also save it to a file and attach it in an email but it is outside the scope of this article.</p>
+<pre><code class="language-bash">apropos . | awk &#39;{print $1}&#39; | sort -R | head -1 | xargs man
+</code></pre>
+
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>PSGitLab v3.0.1 Released</title>
+        <author>
+            <name>Nicholas M. Getchell</name>
+        </author>
+        <link href="https://ngetchell.github.io/psgitlab-v301-released/"/>
+        <id>https://ngetchell.github.io/psgitlab-v301-released/</id>
+
+        <updated>2022-09-06T11:24:20-04:00</updated>
+            <summary>
+                <![CDATA[
+                        <img src="https://ngetchell.github.io/media/posts/16/Screen-Shot-2018-10-03-at-2.07.56-PM.png" alt="" />
+                    A ton of work went into the v3 version of PSGitLab, both on my part and that of the community.
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                    <img src="https://ngetchell.github.io/media/posts/16/Screen-Shot-2018-10-03-at-2.07.56-PM.png" alt="" />
+                <p>A ton of work went into the v3 version of PSGitLab, both on my part and that of the community. 
+There are new contributors as well as familiar names in the changelog and I am thankful for all of the help. 
+My goal of releasing an open source project to help others has been greatly exceeded by the contribution of those in the PowerShell community. 
+Over the next few months, I hope to make it easier for new contributors to jump in and add coverage to the GitLab API.</p>
+<h2 id="enhancements-and-fixes">Enhancements and Fixes</h2>
+<ul>
+<li>[Enhancement] ReleaseNotes.md for end users to keep up with what changed version to version.</li>
+<li>[Fix] Support for 204 HTTP status codes on DELETE so there aren’t errors thrown when any of the Remove-* functions are called.</li>
+<li>[Fix] Hide archived projects by default restored to default (Simon Heather)</li>
+<li>[Fix] Switched from POST to PUT verbs on Block and Unblock to follow the GitLab API reference.</li>
+<li>[Enhancement] Get-GitLabGroup added (Eduardo de Moura Rodrigues)</li>
+<li>[Enhancement] Disable to Progress Bar when running Invoke-WebRequest (Simon Heather)</li>
+<li>[Enhancement] Code Cleanup (Wojciech Sciesinski)</li>
+<li>[Fix] Support for TLS 1.2 if not enabled on client</li>
+<li>[Enhancement] Get-GitLabIssue (Robin Malik)</li>
+<li>[Fix] Changed API endpoint for Get-GitLabProject to follow the GitLab API reference.</li>
+</ul>
+<h2 id="improved-documentation">Improved Documentation</h2>
+<p>Announcing the PSGitLab wiki! Over time, I will work to fill in the gaps in regards to starting out with PSGitLab then to go over advanced configuration to get the most out of your cli experience.
+Another place for improvement will be developer documentation. 
+I would like as many people contributing to PSGitLab as possible. 
+That means, drastically reducing the barrier to entry for people starting out with PowerShell. 
+I hope the developer on-boarding docs would aid in that.
+The goal will be to add all existing features to the wiki then roll out new documentation as new features are added. 
+Look for more in this space soon.</p>
+<h2 id="the-future-for-psgitlab">The Future for PSGitLab</h2>
+<p>In the future, I will be looking to drastically simplify the build and test process, upgrade to Pester v4 syntax, detect the project url via git remote, better default pester tests, and various other enhancement requests.</p>
+<p>For now, I will work to make sure the new v3 of PSGitLab didn’t introduce anymore bugs (hence 3.0.1).</p>
+
             ]]>
         </content>
     </entry>
