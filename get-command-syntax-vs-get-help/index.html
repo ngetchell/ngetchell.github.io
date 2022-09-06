@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+            <title>Get-Command -Syntax vs Get-Help - ngetchell.com </title>
+        <meta name="description" content="Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always&hellip;" />
+         
+        <meta name="generator" content="Publii Open-Source CMS for Static Site" />
+
+        <link rel="canonical" href="https://ngetchell.github.io/get-command-syntax-vs-get-help/">
+        
+        <link rel="alternate" type="application/atom+xml" href="https://ngetchell.github.io/feed.xml" />
+<link rel="alternate" type="application/json" href="https://ngetchell.github.io/feed.json" />
+
+        <meta property="og:title" content="Get-Command -Syntax vs Get-Help" /><meta property="og:site_name" content="ngetchell.com" /><meta property="og:description" content="Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always&hellip;" /><meta property="og:url" content="https://ngetchell.github.io/get-command-syntax-vs-get-help/" /><meta property="og:type" content="article" />
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/fontawesome-all.min.css?v=bbcde81f26378440dac4c3d195714389">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/style.css?v=18b3c33a28d59d5724c862d6181d24ab">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/prism.css?v=47a114aeb6a2047f1d11e1f7ef2c1998">
+        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ngetchell.github.io/get-command-syntax-vs-get-help/"},"headline":"Get-Command -Syntax vs Get-Help","datePublished":"2022-07-16T18:43","dateModified":"2022-07-16T18:44","description":"Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always&hellip;","author":{"@type":"Person","name":"Nicholas M. Getchell","url":"https://ngetchell.github.io/authors/nicholas-m-getchell/"},"publisher":{"@type":"Organization","name":"Nicholas M. Getchell"}}</script>
+        
+        <link rel="stylesheet" href="{{css "prism.css" }}">
+    </head>
+    <body class="is-preload">
+        <div id="wrapper">
+   <div id="main">
+		<div class="inner">
+
+         <header id="header">
+            <a class="logo" href="https://ngetchell.github.io/">
+                  <strong>ngetchell.com</strong>
+            </a>
+         </header>
+
+
+      <article class="post">
+            <header class="main post__header">              
+                  <time datetime="2022-07-16T18:43" class="post__date">
+                        July 16, 2022
+                  </time>
+
+               <h1>
+                  Get-Command -Syntax vs Get-Help
+               </h1>             
+            </header>
+
+
+         <div class="post__inner post__entry">           
+            <p>Wait, is Get-Help or Get-Command right? At the PowerShell Summit 2015 I witnessed Lee Holmes state that Get-Command is always the better way to look up the syntax of a <a href="__GHOST_URL__/intro-to-cmdlets/">cmdlet</a>. What did he mean by that? Get-Help and Get-Command are two of the only three cmdlets you need to know. The other being Get-Member. Why do you need both Get-Command AND Get-Help?</p>
+<p>A quick glance at the output of both commands reveals that the syntax parameter for Get-Command is similar to the help provided by Get-Help. Their function is very similar but derive their information from slightly different sources. When they show conflicting information, which one is correct?</p>
+<h2 id="get-help-limitations">Get-Help Limitations</h2>
+<p>To understand the limitations of Get-Help, you need to know where Get-Help gets it’s content from. Get-Help shows the MAML or Comment-Based help written by the module author. It may also show generic help populated by PowerShell at run time. PowerShell will attempt to give you *something *when you ask for help on a cmdlet that doesn’t provide any.</p>
+<p>The help built into PowerShell also needs to be updated before you can rely on it. The installed help has to correspond to the version you’re running.</p>
+<h2 id="get-command-syntax">Get-Command Syntax</h2>
+<p>Get-Command with the Syntax parameter ignores whatever the module author wrote for help and looks directly at the code on your machine to build out what parameters the cmdlet supports.</p>
+<p>The distinction is important when the help, or documentation of code is out of date. Another example would be if you used Update-Help and pulled down help for a <em>newer</em> version of the help than what you are running locally. Maybe a parameter was renamed, removed, or added in the help to reflect new functionality that you simply don’t have yet.</p>
+<h2 id="source-of-truth">Source of Truth</h2>
+<p>The truth is, Get-Command -Syntax should be considered the source of truth when you are sitting at the console. It works out of the box, there isn’t a need to download anything for it to function, and it doesn’t rely on the module author to provide accurate documentation.</p>
+            
+         </div>
+
+            <footer class="post__inner post__footer">
+
+                     <p class="post__last-updated">
+                        This article was updated on
+                           July 16, 2022
+                     </p>
+                    
+                  <div class="post__share">
+                     <h3>Share post:</h3>
+                     
+                        <a
+                           href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fngetchell.github.io%2Fget-command-syntax-vs-get-help%2F"
+                           class="js-share icon brands fa-facebook"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Facebook</span>
+                        </a>
+                        <a
+                           href="https://twitter.com/share?url=https%3A%2F%2Fngetchell.github.io%2Fget-command-syntax-vs-get-help%2F&amp;via=getch3028&amp;text=Get-Command%20-Syntax%20vs%20Get-Help"
+                           class="js-share icon brands fa-twitter"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Twitter</span>
+                        </a>
+                        <a
+                           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fngetchell.github.io%2Fget-command-syntax-vs-get-help%2F"
+                           class="js-share icon brands fa-linkedin"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">LinkedIn</span>
+                        </a>
+                  </div>
+
+
+                  <div class="post__bio">
+                        <div>
+                           <h3>
+                              <a href="https://ngetchell.github.io/authors/nicholas-m-getchell/" class="invert" rel="author">Nicholas M. Getchell</a>
+                           </h3>
+
+                        </div>
+                  </div>
+            </footer>
+      </article>
+
+
+
+
+  </div>
+</div>
+    <div id="sidebar">
+       <div class="inner">
+    
+    
+          <nav id="menu">
+             <header class="major">
+                <h2>Menu</h2>
+             </header>
+                <ul>
+                         <li>
+                         <a
+                            href="https://ngetchell.github.io/tags/powershell/"
+                               target="_self"
+                >
+                            PowerShell
+                         </a>
+                
+                   </li>
+                         <li class="has-submenu">
+                         <a
+                            href="https://ngetchell.github.io/tags/linux/"
+                               target="_self"
+                               aria-haspopup="true" 
+                               class="opener"
+                            >
+                            Linux
+                         </a>
+                
+                         <ul class="submenu level-2" aria-hidden="true">
+                                  <li>
+                                  <a
+                                     href="https://ngetchell.github.io/authors/nicholas-m-getchell/"
+                                        target="_self"
+                         >
+                                     Submenu Item
+                                  </a>
+                         
+                            </li>
+                         </ul>
+                               </li>
+                </ul>
+                         </nav>
+    
+    
+    
+          <footer id="footer">
+             <p class="copyright">© ngetchell.com - All rights reserved</p> 
+          </footer>
+    
+          </div>
+       </div>
+</div>
+
+
+<script  src="https://ngetchell.github.io/assets/js/jquery.min.js?v=7c14a783dfeb3d238ccd3edd840d82ee"></script>
+<script  src="https://ngetchell.github.io/assets/js/browser.min.js?v=c07298dd19048a8a69ad97e754dfe8d0"></script>
+<script  src="https://ngetchell.github.io/assets/js/breakpoints.min.js?v=81a479eb099e3b187613943b085923b8"></script>
+<script  src="https://ngetchell.github.io/assets/js/util.min.js?v=cbdaf7c20ac2883c77ae23acfbabd47e"></script>
+<script  src="https://ngetchell.github.io/assets/js/main.min.js?v=448f4c9d4b4c374766a1cb76c3d88048"></script>
+<script defer src="https://ngetchell.github.io/assets/js/prism.js?v=8121b5b69231dd2e5612cd01885d6eff"></script>
+
+   <script>var images=document.querySelectorAll("img[loading]");for(var i=0;i<images.length;i++){if(images[i].complete){images[i].classList.add("is-loaded")}else{images[i].addEventListener("load",function(){this.classList.add("is-loaded")},false)}};</script>
+
+<script defer src="{{js "prism.js"}}"></script>
+
+
+</body>
+</html>

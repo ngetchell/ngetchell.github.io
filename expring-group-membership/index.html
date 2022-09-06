@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+            <title>Expring Group Membership - ngetchell.com </title>
+        <meta name="description" content="As a systems administrator working with Active Directory your probably proficient in granting access to network resources. How good are&hellip;" />
+         
+        <meta name="generator" content="Publii Open-Source CMS for Static Site" />
+
+        <link rel="canonical" href="https://ngetchell.github.io/expring-group-membership/">
+        
+        <link rel="alternate" type="application/atom+xml" href="https://ngetchell.github.io/feed.xml" />
+<link rel="alternate" type="application/json" href="https://ngetchell.github.io/feed.json" />
+
+        <meta property="og:title" content="Expring Group Membership" /><meta property="og:site_name" content="ngetchell.com" /><meta property="og:description" content="As a systems administrator working with Active Directory your probably proficient in granting access to network resources. How good are&hellip;" /><meta property="og:url" content="https://ngetchell.github.io/expring-group-membership/" /><meta property="og:type" content="article" />
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/fontawesome-all.min.css?v=bbcde81f26378440dac4c3d195714389">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/style.css?v=18b3c33a28d59d5724c862d6181d24ab">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/prism.css?v=47a114aeb6a2047f1d11e1f7ef2c1998">
+        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ngetchell.github.io/expring-group-membership/"},"headline":"Expring Group Membership","datePublished":"2019-02-13T03:00","dateModified":"2022-06-09T19:48","description":"As a systems administrator working with Active Directory your probably proficient in granting access to network resources. How good are&hellip;","author":{"@type":"Person","name":"Nicholas M. Getchell","url":"https://ngetchell.github.io/authors/nicholas-m-getchell/"},"publisher":{"@type":"Organization","name":"Nicholas M. Getchell"}}</script>
+        
+        <link rel="stylesheet" href="{{css "prism.css" }}">
+    </head>
+    <body class="is-preload">
+        <div id="wrapper">
+   <div id="main">
+		<div class="inner">
+
+         <header id="header">
+            <a class="logo" href="https://ngetchell.github.io/">
+                  <strong>ngetchell.com</strong>
+            </a>
+         </header>
+
+
+      <article class="post">
+            <header class="main post__header">              
+                  <time datetime="2019-02-13T03:00" class="post__date">
+                        February 13, 2019
+                  </time>
+
+               <h1>
+                  Expring Group Membership
+               </h1>             
+            </header>
+
+
+         <div class="post__inner post__entry">           
+            <p>As a systems administrator working with Active Directory your probably proficient in granting access to network resources. How good are you at <em>removing</em> permissions once the access is no longer needed? Probably not as good. Enter Expiring Group Membership in Active Directory. You can specify how long an object belongs in a group. Active Directory handles the removal for you.</p>
+<p>To use Expiring Group Memberships, make sure that the feature is enabled in your forest. This is a feature added in Server 2016 and is not on by default.</p>
+<pre><code class="language-powershell">## If Enabled EnabledScopes 
+## won&#39;t be empty
+
+$Forest = Get-ADForest
+Get-ADOptionalFeature -Identity &#39;Privileged Access Management Feature&#39;
+
+## Enable Privileged Access
+
+$enableADOptionalFeatureSplat = @{
+    Scope = &#39;ForestOrConfigurationSet&#39;
+    Target = $Forest
+    Identity = &#39;Privileged Access Management Feature&#39;
+}
+Enable-ADOptionalFeature @enableADOptionalFeatureSplat
+</code></pre>
+<p>Existing groups should work but if you don’t have one, create a group now.</p>
+<pre><code class="language-powershell">$newADGroupSplat = @{
+    GroupCategory = &#39;Security&#39;
+    DisplayName = &quot;Temporary Membership&quot;
+    GroupScope = &#39;Global&#39;
+    Name = &#39;TempGroup&#39;
+}
+New-ADGroup @newADGroupSplat
+</code></pre>
+<p>Now add the membership using the MemberTimeToLive parameter.</p>
+<pre><code class="language-powershell">$addADGroupMemberSplat = @{
+    Members = &#39;ngetchell&#39;
+    MemberTimeToLive = ( New-Timespan -Days 365)
+    Identity = &#39;TempGroup&#39;
+}
+Add-ADGroupMember @addADGroupMemberSplat
+</code></pre>
+<h2 id="expiring-membership-report">Expiring Membership Report</h2>
+<p>Now to generate a report to show off a members and their membership timespan. You could even pipe to Excel if you’d prefer.</p>
+<pre><code class="language-powershell">Get-ADGroup -Identity TempGroup -ShowMemberTimeToLive -Properties members | 
+    Select-Object -ExpandProperty members | 
+    ForEach-Object {
+    if ( $_ -match &#39;&lt;TTL=&#39; ) {
+        $ttlstring, $DN = $_ -split &#39;&gt;&#39;
+
+        [int]$ttl = $ttlstring -replace &#39;&lt;TTL=&#39;
+        $Timespan = New-Timespan -Seconds $ttl
+        
+        [pscustomobject]@{
+            MemberDN   = $DN -replace &quot;^,&quot;, &quot;&quot;
+            TTL        = $Timespan
+            ExpiryDate = $((Get-Date).Add($Timespan))
+        } 
+    }
+    else {
+        [pscustomobject]@{
+            MemberDN   = $_
+            TTL        = 0
+            ExpiryDate = 0
+        } 
+    }
+} | Export-Excel -Path ~\Desktop\ExpiringGroupMembers.xlsx
+</code></pre>
+            
+         </div>
+
+            <footer class="post__inner post__footer">
+
+                     <p class="post__last-updated">
+                        This article was updated on
+                           June 9, 2022
+                     </p>
+                    
+                  <div class="post__share">
+                     <h3>Share post:</h3>
+                     
+                        <a
+                           href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fngetchell.github.io%2Fexpring-group-membership%2F"
+                           class="js-share icon brands fa-facebook"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Facebook</span>
+                        </a>
+                        <a
+                           href="https://twitter.com/share?url=https%3A%2F%2Fngetchell.github.io%2Fexpring-group-membership%2F&amp;via=getch3028&amp;text=Expring%20Group%20Membership"
+                           class="js-share icon brands fa-twitter"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Twitter</span>
+                        </a>
+                        <a
+                           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fngetchell.github.io%2Fexpring-group-membership%2F"
+                           class="js-share icon brands fa-linkedin"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">LinkedIn</span>
+                        </a>
+                  </div>
+
+                     <div class="post__tag">
+                        
+                           <ul>
+                              <li><strong>Tagged in:</strong></li>
+                                 <li>
+                                    <a href="https://ngetchell.github.io/tags/powershell/">PowerShell</a>
+                                 </li>
+                           </ul>
+                     </div>
+
+                  <div class="post__bio">
+                        <div>
+                           <h3>
+                              <a href="https://ngetchell.github.io/authors/nicholas-m-getchell/" class="invert" rel="author">Nicholas M. Getchell</a>
+                           </h3>
+
+                        </div>
+                  </div>
+            </footer>
+      </article>
+
+
+
+
+  </div>
+</div>
+    <div id="sidebar">
+       <div class="inner">
+    
+    
+          <nav id="menu">
+             <header class="major">
+                <h2>Menu</h2>
+             </header>
+                <ul>
+                         <li>
+                         <a
+                            href="https://ngetchell.github.io/tags/powershell/"
+                               target="_self"
+                >
+                            PowerShell
+                         </a>
+                
+                   </li>
+                         <li class="has-submenu">
+                         <a
+                            href="https://ngetchell.github.io/tags/linux/"
+                               target="_self"
+                               aria-haspopup="true" 
+                               class="opener"
+                            >
+                            Linux
+                         </a>
+                
+                         <ul class="submenu level-2" aria-hidden="true">
+                                  <li>
+                                  <a
+                                     href="https://ngetchell.github.io/authors/nicholas-m-getchell/"
+                                        target="_self"
+                         >
+                                     Submenu Item
+                                  </a>
+                         
+                            </li>
+                         </ul>
+                               </li>
+                </ul>
+                         </nav>
+    
+    
+    
+          <footer id="footer">
+             <p class="copyright">© ngetchell.com - All rights reserved</p> 
+          </footer>
+    
+          </div>
+       </div>
+</div>
+
+
+<script  src="https://ngetchell.github.io/assets/js/jquery.min.js?v=7c14a783dfeb3d238ccd3edd840d82ee"></script>
+<script  src="https://ngetchell.github.io/assets/js/browser.min.js?v=c07298dd19048a8a69ad97e754dfe8d0"></script>
+<script  src="https://ngetchell.github.io/assets/js/breakpoints.min.js?v=81a479eb099e3b187613943b085923b8"></script>
+<script  src="https://ngetchell.github.io/assets/js/util.min.js?v=cbdaf7c20ac2883c77ae23acfbabd47e"></script>
+<script  src="https://ngetchell.github.io/assets/js/main.min.js?v=448f4c9d4b4c374766a1cb76c3d88048"></script>
+<script defer src="https://ngetchell.github.io/assets/js/prism.js?v=8121b5b69231dd2e5612cd01885d6eff"></script>
+
+   <script>var images=document.querySelectorAll("img[loading]");for(var i=0;i<images.length;i++){if(images[i].complete){images[i].classList.add("is-loaded")}else{images[i].addEventListener("load",function(){this.classList.add("is-loaded")},false)}};</script>
+
+<script defer src="{{js "prism.js"}}"></script>
+
+
+</body>
+</html>

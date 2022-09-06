@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="https://ngetchell.github.io/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<url>
+<loc>https://ngetchell.github.io/</loc>
+</url>
+<url>
+<loc>https://ngetchell.github.io/expring-group-membership/</loc>
+<lastmod>2022-06-09T19:48:38-04:00</lastmod>
+</url>
+<url>
+<loc>https://ngetchell.github.io/get-command-syntax-vs-get-help/</loc>
+<lastmod>2022-07-16T18:44:15-04:00</lastmod>
+</url>
+<url>
+<loc>https://ngetchell.github.io/logging-powershell-scripts/</loc>
+<lastmod>2022-07-16T18:35:14-04:00</lastmod>
+</url>
+</urlset>

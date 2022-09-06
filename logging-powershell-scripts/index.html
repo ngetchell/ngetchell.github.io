@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+            <title>Logging PowerShell Scripts - ngetchell.com </title>
+        <meta name="description" content="As you progress from running commands at the console, to scripting tedious work, to automating entire processes you still need&hellip;" />
+         
+        <meta name="generator" content="Publii Open-Source CMS for Static Site" />
+
+        <link rel="canonical" href="https://ngetchell.github.io/logging-powershell-scripts/">
+        
+        <link rel="alternate" type="application/atom+xml" href="https://ngetchell.github.io/feed.xml" />
+<link rel="alternate" type="application/json" href="https://ngetchell.github.io/feed.json" />
+
+        <meta property="og:title" content="Logging PowerShell Scripts" /><meta property="og:site_name" content="ngetchell.com" /><meta property="og:description" content="As you progress from running commands at the console, to scripting tedious work, to automating entire processes you still need&hellip;" /><meta property="og:url" content="https://ngetchell.github.io/logging-powershell-scripts/" /><meta property="og:type" content="article" />
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/fontawesome-all.min.css?v=bbcde81f26378440dac4c3d195714389">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/style.css?v=18b3c33a28d59d5724c862d6181d24ab">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/prism.css?v=47a114aeb6a2047f1d11e1f7ef2c1998">
+        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ngetchell.github.io/logging-powershell-scripts/"},"headline":"Logging PowerShell Scripts","datePublished":"2019-01-23T04:21","dateModified":"2022-07-16T18:35","description":"As you progress from running commands at the console, to scripting tedious work, to automating entire processes you still need&hellip;","author":{"@type":"Person","name":"Nicholas M. Getchell","url":"https://ngetchell.github.io/authors/nicholas-m-getchell/"},"publisher":{"@type":"Organization","name":"Nicholas M. Getchell"}}</script>
+        
+        <link rel="stylesheet" href="{{css "prism.css" }}">
+    </head>
+    <body class="is-preload">
+        <div id="wrapper">
+   <div id="main">
+		<div class="inner">
+
+         <header id="header">
+            <a class="logo" href="https://ngetchell.github.io/">
+                  <strong>ngetchell.com</strong>
+            </a>
+         </header>
+
+
+      <article class="post">
+            <header class="main post__header">              
+                  <time datetime="2019-01-23T04:21" class="post__date">
+                        January 23, 2019
+                  </time>
+
+               <h1>
+                  Logging PowerShell Scripts
+               </h1>             
+            </header>
+
+
+         <div class="post__inner post__entry">           
+            
+  <p>
+    As you progress from running commands at the console, to scripting tedious work, to automating entire processes you still need to keep an eye on whats running. Nobody likes figuring out what went wrong on in a process by debugging your script. You should integrate logging into any scripts that run unattended. Logging saves time and helps surface errors in your scripts. Luckily, saving to a log file in PowerShell is simple.
+  </p>
+
+    <h2 id="outfile">
+      Out-File
+    </h2>
+
+  <p>
+    Out-file is a very simple way to handle writing to a file. Simply put Out-File at the end of your pipeline to save output to a file.
+  </p>
+<pre class="line-numbers  language-html"><code>$File = "~\Desktop\Out-File.log"
+'[Error]: Service failed to restart' | Out-File -File $File -Append</code></pre>
+
+  <p>
+    You can also catch errors and put the contents of the error into a file.
+  </p>
+<pre class="line-numbers  language-html"><code>$File = "~\Desktop\Out-File.log"
+
+try {
+    Invoke-RestMethod -URI 'https://doesnotexist' -ErrorAction Stop
+} catch {
+    $ErrorOutput = $_
+    $ErrorOutput | Out-File -File $File -Append
+}
+</code></pre>
+
+    <h2 id="teeobject">
+      Tee-Object
+    </h2>
+
+  <p>
+    The <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/tee-object?view=powershell-6" target="_blank">Tee-Object</a> cmdlet allows you to split the direction of the pipeline. If you have a Linux background this will sound familar. The pipeline output still continues on but you can save off pipeline output into a file. This makes it easy to see what's going on when your at the console since the output still appears on the screen but you can still save output for later viewing.
+  </p>
+<pre class="line-numbers  language-html"><code>$File = "~\Desktop\Tee-Object.log"
+$Result = Get-Process -Name PowerShell | 
+    Tee-Object -FilePath $File -Append 
+
+$Result | 
+    Select-Object -Property Name,CPU,ID | 
+    Tee-Object -FilePath $File -Append</code></pre>
+
+  <p>
+    You can see that the first command saves the output of Get-Process to both the file on your desktop as well as in the $Results variable. Then, we pipe the previous results out, manipulate the output via Select-Object, then call Tee-Object again. This time, the output goes to the console window as well as the log file.
+  </p>
+
+  <p>
+    Using Tee-Object is a great way to keep pipeline output in the console and in a permanent log. As with Out-File, remember to use the -Append parameter. You probably don’t want to overwrite the log file with each write.
+  </p>
+
+    <h2 id="write-to-the-event-log">
+      Write to the Event Log
+    </h2>
+<pre class="line-numbers  language-html"><code>$Logname = 'Getchell.org'
+$Source = 'Automated Script'
+
+$NewLog = @{
+    Logname = $Logname
+    Source = $Source
+}
+
+try {
+    New-EventLog @NewLog -ErrorAction Stop
+} catch [System.InvalidOperationException] {
+    # Ignore if source already exists
+}
+
+$InformationalLog = @{
+    Logname = $Logname
+    Source = $Source
+    EntryType = 'Information'
+    Message = 'Verbose informational message'
+    EventId = 19
+}
+
+Write-EventLog @InformationalLog</code></pre>
+
+    <h2 id="other-considerations">
+      Other Considerations
+    </h2>
+
+  <p>
+    Working with objects can be a pain to format for logging purposes. If you use the default pipeline view, you <a href="https://powershell.getchell.org/2016/10/26/never-lose-work/" target="_blank">may lose data due to the PowerShell formatting system</a>. A quick way to get around this is to pipe out to ConvertTo-Json before writing the pipeline to a log. This will serialize the object so it can be written to disk without data loss. ConvertTo-Json will also expand any nested properties, something Select-Object -Property * and the Format-* cmdlets won't do.
+  </p>
+<pre class="line-numbers  language-html"><code>$File = "~\Desktop\object-json.log"
+
+Get-Service -Name BITS | 
+    ConvertTo-Json | 
+    Tee-Object -FilePath $File -Append</code></pre>
+
+    <h2 id="log-filenames">
+      Log Filenames
+    </h2>
+
+  <p>
+    Another thing to consider is to name logs with timestamp data. If you ever have to debug your automated script you’ll thank yourself later for keeping each run of your process in separate files. I usually use the following convention:
+  </p>
+<pre class="line-numbers  language-html"><code>$Log = ".\log\process-name-$( Get-Date -Format FileDateTime ).log"</code></pre>
+
+  <p>
+    Get-Date has a built-in format that keeps invalid characters out a date/time string for use with filenames. I reference this constantly.
+  </p>
+
+    <h2 id="viewing-logs-in-realtime">
+      Viewing Logs in Real-Time
+    </h2>
+
+  <p>
+    I prefer to keep logs as files as I have more experience with grep and with the Event Viewer. For log running processes I <a href="https://powershell.getchell.org/2016/10/19/tail-a-file-in-powershell/" target="_blank">tail the open log files</a> to see progress in real-time. This is great for debugging scheduled tasks where you aren't at the console.
+  </p>
+
+  <p>
+    
+  </p>            
+         </div>
+
+            <footer class="post__inner post__footer">
+
+                     <p class="post__last-updated">
+                        This article was updated on
+                           July 16, 2022
+                     </p>
+                    
+                  <div class="post__share">
+                     <h3>Share post:</h3>
+                     
+                        <a
+                           href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fngetchell.github.io%2Flogging-powershell-scripts%2F"
+                           class="js-share icon brands fa-facebook"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Facebook</span>
+                        </a>
+                        <a
+                           href="https://twitter.com/share?url=https%3A%2F%2Fngetchell.github.io%2Flogging-powershell-scripts%2F&amp;via=getch3028&amp;text=Logging%20PowerShell%20Scripts"
+                           class="js-share icon brands fa-twitter"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Twitter</span>
+                        </a>
+                        <a
+                           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fngetchell.github.io%2Flogging-powershell-scripts%2F"
+                           class="js-share icon brands fa-linkedin"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">LinkedIn</span>
+                        </a>
+                  </div>
+
+
+                  <div class="post__bio">
+                        <div>
+                           <h3>
+                              <a href="https://ngetchell.github.io/authors/nicholas-m-getchell/" class="invert" rel="author">Nicholas M. Getchell</a>
+                           </h3>
+
+                        </div>
+                  </div>
+            </footer>
+      </article>
+
+
+
+
+  </div>
+</div>
+    <div id="sidebar">
+       <div class="inner">
+    
+    
+          <nav id="menu">
+             <header class="major">
+                <h2>Menu</h2>
+             </header>
+                <ul>
+                         <li>
+                         <a
+                            href="https://ngetchell.github.io/tags/powershell/"
+                               target="_self"
+                >
+                            PowerShell
+                         </a>
+                
+                   </li>
+                         <li class="has-submenu">
+                         <a
+                            href="https://ngetchell.github.io/tags/linux/"
+                               target="_self"
+                               aria-haspopup="true" 
+                               class="opener"
+                            >
+                            Linux
+                         </a>
+                
+                         <ul class="submenu level-2" aria-hidden="true">
+                                  <li>
+                                  <a
+                                     href="https://ngetchell.github.io/authors/nicholas-m-getchell/"
+                                        target="_self"
+                         >
+                                     Submenu Item
+                                  </a>
+                         
+                            </li>
+                         </ul>
+                               </li>
+                </ul>
+                         </nav>
+    
+    
+    
+          <footer id="footer">
+             <p class="copyright">© ngetchell.com - All rights reserved</p> 
+          </footer>
+    
+          </div>
+       </div>
+</div>
+
+
+<script  src="https://ngetchell.github.io/assets/js/jquery.min.js?v=7c14a783dfeb3d238ccd3edd840d82ee"></script>
+<script  src="https://ngetchell.github.io/assets/js/browser.min.js?v=c07298dd19048a8a69ad97e754dfe8d0"></script>
+<script  src="https://ngetchell.github.io/assets/js/breakpoints.min.js?v=81a479eb099e3b187613943b085923b8"></script>
+<script  src="https://ngetchell.github.io/assets/js/util.min.js?v=cbdaf7c20ac2883c77ae23acfbabd47e"></script>
+<script  src="https://ngetchell.github.io/assets/js/main.min.js?v=448f4c9d4b4c374766a1cb76c3d88048"></script>
+<script defer src="https://ngetchell.github.io/assets/js/prism.js?v=8121b5b69231dd2e5612cd01885d6eff"></script>
+
+   <script>var images=document.querySelectorAll("img[loading]");for(var i=0;i<images.length;i++){if(images[i].complete){images[i].classList.add("is-loaded")}else{images[i].addEventListener("load",function(){this.classList.add("is-loaded")},false)}};</script>
+
+<script defer src="{{js "prism.js"}}"></script>
+
+
+</body>
+</html>
