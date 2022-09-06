@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+            <title>Git Commit Messages and Hooks - ngetchell.com </title>
+        <meta name="description" content="Maintaining integrity in your code is hard. Git hooks are an easy way to manage your workflow so you never&hellip;" />
+         
+        <meta name="generator" content="Publii Open-Source CMS for Static Site" />
+
+        <link rel="canonical" href="https://ngetchell.github.io/git-commit-messages-and-hooks/">
+        
+        <link rel="alternate" type="application/atom+xml" href="https://ngetchell.github.io/feed.xml" />
+<link rel="alternate" type="application/json" href="https://ngetchell.github.io/feed.json" />
+
+        <meta property="og:title" content="Git Commit Messages and Hooks" /><meta property="og:site_name" content="ngetchell.com" /><meta property="og:description" content="Maintaining integrity in your code is hard. Git hooks are an easy way to manage your workflow so you never&hellip;" /><meta property="og:url" content="https://ngetchell.github.io/git-commit-messages-and-hooks/" /><meta property="og:type" content="article" />
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/fontawesome-all.min.css?v=bbcde81f26378440dac4c3d195714389">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/style.css?v=18b3c33a28d59d5724c862d6181d24ab">
+        <link rel="stylesheet" href="https://ngetchell.github.io/assets/css/prism.css?v=47a114aeb6a2047f1d11e1f7ef2c1998">
+        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ngetchell.github.io/git-commit-messages-and-hooks/"},"headline":"Git Commit Messages and Hooks","datePublished":"2018-02-27T13:30","dateModified":"2022-09-06T12:11","description":"Maintaining integrity in your code is hard. Git hooks are an easy way to manage your workflow so you never&hellip;","author":{"@type":"Person","name":"Nicholas M. Getchell","url":"https://ngetchell.github.io/authors/nicholas-m-getchell/"},"publisher":{"@type":"Organization","name":"Nicholas M. Getchell"}}</script>
+        
+        <link rel="stylesheet" href="{{css "prism.css" }}">
+    </head>
+    <body class="is-preload">
+        <div id="wrapper">
+   <div id="main">
+		<div class="inner">
+
+         <header id="header">
+            <a class="logo" href="https://ngetchell.github.io/">
+                  <strong>ngetchell.com</strong>
+            </a>
+         </header>
+
+
+      <article class="post">
+            <header class="main post__header">              
+                  <time datetime="2018-02-27T13:30" class="post__date">
+                        February 27, 2018
+                  </time>
+
+               <h1>
+                  Git Commit Messages and Hooks
+               </h1>             
+            </header>
+
+
+         <div class="post__inner post__entry">           
+            <p>Maintaining integrity in your code is hard. Git hooks are an easy way to manage your workflow so you never commit code that doesn’t meet your standards.</p>
+<p>How do you know if the changes you made introduced bugs? Testing of course. Do you know if your code follows best practices? To figure that out, you’d use a linter. In PowerShell the community uses Pester for testing and PSScriptAnalyzer for making sure you follow community standards. Git hooks let you validate your code before it is committed in Git.</p>
+<p>Another useful feature that Git provides is the ability to pre-populate your commit message. Maybe your commit messages would benefit from template or maybe a reminder to describe your changes.</p>
+<h2 id="pre-commit-hooks">Pre-Commit Hooks</h2>
+<p>With the pre-commit hook the key is to make sure your hook exits correctly. Every initialized repository comes with a sample git hooks.</p>
+<pre><code class="language-powershell">Get-ChildItem .git\hooks\ -Recurse
+
+Directory: Git:\project\.git\hooks
+
+Mode LastWriteTime Length Name
+---- ------------- ------ ----
+-a---- 11/20/2017 8:25 PM 478 applypatch-msg.sample
+-a---- 11/20/2017 8:25 PM 896 commit-msg.sample
+-a---- 11/20/2017 8:25 PM 189 post-update.sample
+-a---- 11/20/2017 8:25 PM 424 pre-applypatch.sample
+-a---- 11/20/2017 8:25 PM 1642 pre-commit
+-a---- 11/20/2017 8:25 PM 1642 pre-commit.sample
+-a---- 11/20/2017 8:25 PM 1348 pre-push.sample
+-a---- 11/20/2017 8:25 PM 4898 pre-rebase.sample
+-a---- 11/20/2017 8:25 PM 544 pre-receive.sample
+-a---- 11/20/2017 8:25 PM 1239 prepare-commit-msg.sample
+-a---- 11/20/2017 8:25 PM 3610 update.sample
+</code></pre>
+<p>To start, create a pre-commit file in the .git\hooks\ directory located in your repository.
+Since this is a PowerShell blog we’re going to use a bash script to invoke PowerShell.</p>
+<pre><code class="language-bash">&gt;#!/bin/sh
+c:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -ExecutionPolicy Bypass -NoProfile -File &#39;.git\hooks\pre-commit.ps1&#39;
+</code></pre>
+<p>In the pre-commit.ps1 file you can write standard PowerShell code. Write-Host can be used to write errors to the screen.</p>
+<p>What governs whether a commit message is saved or not is the exit code PowerShell.exe throws. If you’d like to keep someone from being able to commit, add the following:</p>
+<pre><code class="language-powershell">Write-Host &quot;Aborting Commit&quot; -ForegroundColor Red
+exit 1
+</code></pre>
+<h2 id="psscriptanalyzer">PSScriptAnalyzer</h2>
+<p>Consider a file named alias.ps1 needs to be added to your repository but was copy and pasted from the PowerShell console.
+Now I don’t know about you, but I try to save as many characters as I can when so I use lots of aliases.</p>
+<p>When I go to commit the quick script I get an error.
+Notice your prompt, I still have one file sitting in the staging area.
+The script I attempted to put into source control didn’t meet the standards from PSScriptAnalyzer.</p>
+<pre><code class="language-powershell">$Results = Invoke-ScriptAnalyzer -Severity Error, Warning .\ -Recurse
+
+if ( $Results.count -gt 0 ) {
+    &quot;Found {0} issues&quot; -f $Results.Count
+    $Results
+    exit 1
+}
+</code></pre>
+<h2 id="pester">Pester</h2>
+<p>If you’ve been writing Pester tests with your work you can also leverage your work to make sure you always commit clean code. Consider the the following tests:</p>
+<pre><code class="language-powershell">Describe &quot;Addition&quot; {
+    It &quot;Can&#39;t Add&quot; {
+        5 | should be 4
+    }
+}
+</code></pre>
+<p>It is designed to fail to illustrate the ability to keep git from finalizing your commit. Our pre-commit.ps1 file will look similar to our previous one. It will abort the commit on any failing Pester tests.</p>
+<pre><code class="language-powershell">$Results = Invoke-Pester -Show Failed, describe -PassThru
+
+if ( $Results.FailedCount -gt 0 ) {
+    exit 1
+}
+</code></pre>
+<h2 id="other-uses">Other Uses</h2>
+<p>You can also use pre-commit hooks to sign your PowerShell files to make sure they comply with security practices on your network. Another use could be to put your .ps1 files through a code formater that makes sure you’re following company code styles.</p>
+<h2 id="commit-messages">Commit Messages</h2>
+<p>Commit messages have a nasty habit of devolving.To combat this tendency git has a configuration where you can add information and instructions to your commit message so you are reminded to leave the useful comments.</p>
+<p>First, create a text file with your template commit message. Here is a simple example of a commit message that keeps you on track. Remember, anything that begins with a ‘#’ character is ignored in a commit message.</p>
+<pre><code>## Subject 
+
+
+## Body
+
+
+## Files Changed
+
+
+## Link to Issue in tracker
+To associate the template with your local repository use the following.
+</code></pre>
+<pre><code class="language-bash">git config --global commit.template .\commit_template.txt
+</code></pre>
+            
+         </div>
+
+            <footer class="post__inner post__footer">
+
+                     <p class="post__last-updated">
+                        This article was updated on
+                           September 6, 2022
+                     </p>
+                    
+                  <div class="post__share">
+                     <h3>Share post:</h3>
+                     
+                        <a
+                           href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fngetchell.github.io%2Fgit-commit-messages-and-hooks%2F"
+                           class="js-share icon brands fa-facebook"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Facebook</span>
+                        </a>
+                        <a
+                           href="https://twitter.com/share?url=https%3A%2F%2Fngetchell.github.io%2Fgit-commit-messages-and-hooks%2F&amp;via=getch3028&amp;text=Git%20Commit%20Messages%20and%20Hooks"
+                           class="js-share icon brands fa-twitter"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">Twitter</span>
+                        </a>
+                        <a
+                           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fngetchell.github.io%2Fgit-commit-messages-and-hooks%2F"
+                           class="js-share icon brands fa-linkedin"
+                           rel="nofollow noopener noreferrer">
+                           <span class="label">LinkedIn</span>
+                        </a>
+                  </div>
+
+                     <div class="post__tag">
+                        
+                           <ul>
+                              <li><strong>Tagged in:</strong></li>
+                                 <li>
+                                    <a href="https://ngetchell.github.io/tags/linux/">Linux</a>
+                                 </li>
+                                 <li>
+                                    <a href="https://ngetchell.github.io/tags/powershell/">PowerShell</a>
+                                 </li>
+                           </ul>
+                     </div>
+
+                  <div class="post__bio">
+                        <div>
+                           <h3>
+                              <a href="https://ngetchell.github.io/authors/nicholas-m-getchell/" class="invert" rel="author">Nicholas M. Getchell</a>
+                           </h3>
+
+                        </div>
+                  </div>
+            </footer>
+      </article>
+
+
+
+
+  </div>
+</div>
+    <div id="sidebar">
+       <div class="inner">
+    
+    
+          <nav id="menu">
+             <header class="major">
+                <h2>Menu</h2>
+             </header>
+                <ul>
+                         <li>
+                         <a
+                            href="https://ngetchell.github.io/tags/powershell/"
+                               target="_self"
+                >
+                            PowerShell
+                         </a>
+                
+                   </li>
+                         <li>
+                         <a
+                            href="https://ngetchell.github.io/tags/linux/"
+                               target="_self"
+                >
+                            Linunx
+                         </a>
+                
+                   </li>
+                         <li>
+                         <a
+                            href="https://ngetchell.github.io/tags/informationsecurity/"
+                               target="_self"
+                >
+                            Cyber Security
+                         </a>
+                
+                   </li>
+                </ul>
+                         </nav>
+    
+    
+    
+          <footer id="footer">
+             <p class="copyright">© ngetchell.com - All rights reserved</p> 
+          </footer>
+    
+          </div>
+       </div>
+</div>
+
+
+<script  src="https://ngetchell.github.io/assets/js/jquery.min.js?v=7c14a783dfeb3d238ccd3edd840d82ee"></script>
+<script  src="https://ngetchell.github.io/assets/js/browser.min.js?v=c07298dd19048a8a69ad97e754dfe8d0"></script>
+<script  src="https://ngetchell.github.io/assets/js/breakpoints.min.js?v=81a479eb099e3b187613943b085923b8"></script>
+<script  src="https://ngetchell.github.io/assets/js/util.min.js?v=cbdaf7c20ac2883c77ae23acfbabd47e"></script>
+<script  src="https://ngetchell.github.io/assets/js/main.min.js?v=448f4c9d4b4c374766a1cb76c3d88048"></script>
+<script defer src="https://ngetchell.github.io/assets/js/prism.js?v=8121b5b69231dd2e5612cd01885d6eff"></script>
+
+   <script>var images=document.querySelectorAll("img[loading]");for(var i=0;i<images.length;i++){if(images[i].complete){images[i].classList.add("is-loaded")}else{images[i].addEventListener("load",function(){this.classList.add("is-loaded")},false)}};</script>
+
+<script defer src="{{js "prism.js"}}"></script>
+
+
+</body>
+</html>
